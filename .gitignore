@@ -62,3 +62,7 @@ scripts/.ipynb_checkpoints/*
 test/*
 output/*
 work_dirs
+
+.env
+outputs/
+span.log
