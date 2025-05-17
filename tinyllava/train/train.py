@@ -84,7 +84,10 @@ def train():
                            args=training_arguments,
                            **data_module)
     
-    trainer.train()
+    if list(pathlib.Path(training_arguments.output_dir).glob("checkpoint-*")):
+        trainer.train(resume_from_checkpoint=True)
+    else:
+        trainer.train()
     
     training_recipe.save(model, trainer)
 
