@@ -39,16 +39,16 @@ deepspeed --master_port 29501 tinyllava/train/train.py \
     --tune_type_vision_tower frozen\
     --tune_vision_tower_from_layer 0 \
     --tune_type_connector full \
-    --group_by_modality_length True \
-    --output_dir work_dirs/llava-${LLM_VARIANT}-${VT_VARIANT}-${VERSION}-finetune \
+    --group_by_modality_length False \
+    --output_dir work_dirs/llava-${LLM_VARIANT}-${VT_VARIANT}-${VERSION}-finetune-multi-image \
     --num_train_epochs 1 \
-    --per_device_train_batch_size 8 \
+    --per_device_train_batch_size 4 \
     --per_device_eval_batch_size 4 \
     --gradient_accumulation_steps 4 \
     --save_strategy "steps" \
-    --save_steps 50000 \
-    --save_total_limit 1 \
-    --learning_rate 2e-5 \
+    --save_steps 500 \
+    --save_total_limit 3 \
+    --learning_rate 1.4e-5 \
     --weight_decay 0. \
     --warmup_ratio 0.03 \
     --lr_scheduler_type "cosine" \

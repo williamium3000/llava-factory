@@ -10,11 +10,11 @@ from .image_preprocess import ImagePreprocess
 from ..utils.arguments import DataArguments
 from ..utils.constants import *
 
-
+import traceback
 import transformers
 import torch
 from torch.utils.data import Dataset
-
+import random
 
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
@@ -58,11 +58,29 @@ class LazySupervisedDataset(Dataset):
         sources = self.list_data_dict[i]
         data_dict = self.text_preprocess(copy.deepcopy(sources["conversations"]))
         if 'image' in sources:
-            image_file = self.list_data_dict[i]['image']
-            image_folder = self.data_args.image_folder
-            image = Image.open(os.path.join(image_folder, image_file)).convert('RGB')
-            image = self.image_preprocess(image)
-            data_dict['image'] = image
+            # image_file = self.list_data_dict[i]['image']
+            # image_folder = self.data_args.image_folder
+            # image = Image.open(os.path.join(image_folder, image_file)).convert('RGB')
+            # image = self.image_preprocess(image)
+            # data_dict['image'] = image
+            try:
+                if not isinstance(sources['image'], Sequence):
+                    images = [sources['image']]
+                else:
+                    images = sources['image']
+                # image is a list of image files
+                data_dict['image'] = []
+                for image_file in images:
+                    image_folder = self.data_args.image_folder
+                    image = Image.open(os.path.join(image_folder, image_file)).convert('RGB')
+                    image = self.image_preprocess(image)
+                    data_dict['image'].append(image)
+            except Exception as e:
+                traceback.print_exc()
+                backup_idx = random.randint(0, len(self.list_data_dict) - 1)
+                print(f"Encounted error when reading image {image_file}, use {backup_idx}-th example instead!!!")
+                return self.__getitem__(backup_idx)
+            
         elif self.data_args.is_multimodal:
             # image does not exist in the data, but the model is multimodal
             # print(f'{i}:{sources}')
@@ -107,7 +125,10 @@ class DataCollatorForSupervisedDataset(object):
         )
 
         if 'image' in instances[0]:
-            images = [instance['image'] for instance in instances]
+            images = []
+            for instance in instances:
+                images.extend(instance['image'])
+            # images = [instance['image'] for instance in instances]
             if all(x is not None and x.shape == images[0].shape for x in images):
                 batch['images'] = torch.stack(images)
             else:

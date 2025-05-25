@@ -60,7 +60,7 @@ class Template:
                 answer_list.append(message['value'])
         
         assert len(question_list) == len(answer_list) , \
-            f"qa is not match : length_q:{len(question_list)} vs length_a:{len(answer_list)}"
+            f"qa is not match in {messages} : length_q:{len(question_list)} vs length_a:{len(answer_list)}"
         return question_list, answer_list
     
 
