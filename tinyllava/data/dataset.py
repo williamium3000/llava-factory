@@ -64,7 +64,7 @@ class LazySupervisedDataset(Dataset):
             # image = self.image_preprocess(image)
             # data_dict['image'] = image
             try:
-                if not isinstance(sources['image'], Sequence):
+                if isinstance(sources['image'], str):
                     images = [sources['image']]
                 else:
                     images = sources['image']
@@ -85,7 +85,7 @@ class LazySupervisedDataset(Dataset):
             # image does not exist in the data, but the model is multimodal
             # print(f'{i}:{sources}')
             crop_size = getattr(self.data_args.image_processor, 'crop_size', getattr(self.data_args.image_processor, 'size'))
-            data_dict['image'] = torch.zeros(3, crop_size['height'], crop_size['width'])
+            data_dict['image'] = [torch.zeros(3, crop_size['height'], crop_size['width'])]
         return data_dict
 
 
