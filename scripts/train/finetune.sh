@@ -40,11 +40,11 @@ deepspeed --master_port 29501 tinyllava/train/train.py \
     --tune_vision_tower_from_layer 0 \
     --tune_type_connector full \
     --group_by_modality_length False \
-    --output_dir work_dirs/llava-${LLM_VARIANT}-${VT_VARIANT}-${VERSION}-finetune-llava_v1_5_mix665k \
+    --output_dir work_dirs/llava-${LLM_VARIANT}-${VT_VARIANT}-${VERSION}-cc15m-pt-finetune-llava_v1_5_mix665k \
     --num_train_epochs 1 \
-    --per_device_train_batch_size 4 \
+    --per_device_train_batch_size 8 \
     --per_device_eval_batch_size 4 \
-    --gradient_accumulation_steps 4 \
+    --gradient_accumulation_steps 2 \
     --save_strategy "steps" \
     --save_steps 500 \
     --save_total_limit 3 \

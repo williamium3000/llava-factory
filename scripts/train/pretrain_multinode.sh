@@ -19,16 +19,16 @@ MODEL_MAX_LENGTH="$9"
 VT_VARIANT="${VT_VERSION#*/}"
 LLM_VARIANT="${LLM_VERSION#*/}"
 
-deepspeed --master_port 29501 tinyllava/train/train.py \
+accelerate launch --config_file scripts/train/config.yaml \
+    tinyllava/train/train.py \
     --deepspeed ./scripts/zero3.json \
-    --data_path  $DATA_PATH\
+    --data_path  $DATA_PATH \
     --image_folder $IMAGE_PATH \
     --is_multimodal True \
     --conv_version pretrain \
     --s3_config work_dirs/s3.json \
     --model_name_or_path $LLM_VERSION \
     --vision_tower $VT_VERSION \
-    --vision_tower2 "$VT_VERSION2" \
     --connector_type $CN_VERSION \
     --mm_vision_select_layer -2 \
     --image_aspect_ratio square \
@@ -44,7 +44,7 @@ deepspeed --master_port 29501 tinyllava/train/train.py \
     --num_train_epochs 1 \
     --per_device_train_batch_size 16 \
     --per_device_eval_batch_size 4 \
-    --gradient_accumulation_steps 4 \
+    --gradient_accumulation_steps 2 \
     --save_strategy "steps" \
     --save_steps 1000 \
     --save_total_limit 1 \
@@ -60,4 +60,5 @@ deepspeed --master_port 29501 tinyllava/train/train.py \
     --lazy_preprocess True \
     --report_to tensorboard \
     --tokenizer_use_fast False \
-    --run_name llava-${LLM_VARIANT}-${VT_VARIANT}-${VERSION}-pretrain-cc15m 
+    --run_name llava-${LLM_VARIANT}-${VT_VARIANT}-${VERSION}-pretrain-cc15m
+    # --vision_tower2 $VT_VERSION2 \
