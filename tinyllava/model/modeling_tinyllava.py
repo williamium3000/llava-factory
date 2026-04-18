@@ -52,7 +52,9 @@ class TinyLlavaPreTrainedModel(PreTrainedModel):
 
     @property
     def _supports_sdpa(self):
-        return self.language_model._supports_sdpa
+        if hasattr(self, "language_model"):
+            return self.language_model._supports_sdpa
+        return False
 
 
 class TinyLlavaForConditionalGeneration(TinyLlavaPreTrainedModel):

@@ -19,13 +19,18 @@ MODEL_MAX_LENGTH="$9"
 VT_VARIANT="${VT_VERSION#*/}"
 LLM_VARIANT="${LLM_VERSION#*/}"
 
-deepspeed --master_port 29501 tinyllava/train/train.py \
+S3_CONFIG_ARG=""
+if [ -f "work_dirs/s3.json" ]; then
+    S3_CONFIG_ARG="--s3_config work_dirs/s3.json"
+fi
+
+deepspeed --master_port 35801 tinyllava/train/train.py \
     --deepspeed ./scripts/zero3.json \
     --data_path  $DATA_PATH\
     --image_folder $IMAGE_PATH \
     --is_multimodal True \
     --conv_version pretrain \
-    --s3_config work_dirs/s3.json \
+    $S3_CONFIG_ARG \
     --model_name_or_path $LLM_VERSION \
     --vision_tower $VT_VERSION \
     --vision_tower2 "$VT_VERSION2" \
